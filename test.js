@@ -1,6 +1,7 @@
 const test = require('brittle')
 const Sidecar = require('bare-sidecar')
 const host = require('bare-stow-host')
+const { isWindows } = require('which-runtime')
 
 const worker = require.resolve('./test/fixtures/worker.js')
 
@@ -65,7 +66,8 @@ test('runtime exits once the configured grace runs out', async (t) => {
   t.is(await exited, 0)
 })
 
-test('runtime runs stop on SIGTERM', async (t) => {
+// Windows has no catchable SIGTERM; the child is terminated outright.
+test('runtime runs stop on SIGTERM', { skip: isWindows }, async (t) => {
   const { ipc, sidecar, exited } = spawn('stop')
 
   await ipc.ready

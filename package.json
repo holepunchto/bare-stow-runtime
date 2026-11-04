@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "bare-sidecar": "^0.5.12",
-    "bare-stow-host": "^0.1.0",
+    "bare-stow-host": "^0.2.0",
     "brittle": "^4.0.2",
     "lunte": "^1.7.0",
     "prettier": "^3.3.3",

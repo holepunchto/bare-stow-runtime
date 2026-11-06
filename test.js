@@ -66,19 +66,22 @@ test('runtime exits once the configured grace runs out', async (t) => {
   t.is(await exited, 0)
 })
 
-// Windows has no catchable SIGTERM; the child is terminated outright.
-test('runtime runs stop on SIGTERM', { skip: isWindows }, async (t) => {
-  const { ipc, sidecar, exited } = spawn('stop')
+// Windows can't send catchable signals to a child process; it is terminated
+// outright.
+for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP']) {
+  test(`runtime runs stop on ${signal}`, { skip: isWindows }, async (t) => {
+    const { ipc, sidecar, exited } = spawn('stop')
 
-  await ipc.ready
+    await ipc.ready
 
-  const goodbye = new Promise((resolve) => ipc.once('data', resolve))
+    const goodbye = new Promise((resolve) => ipc.once('data', resolve))
 
-  sidecar.kill('SIGTERM')
+    sidecar.kill(signal)
 
-  t.alike(await goodbye, Buffer.from('goodbye'))
-  t.is(await exited, 0)
-})
+    t.alike(await goodbye, Buffer.from('goodbye'))
+    t.is(await exited, 0)
+  })
+}
 
 function spawn(mode, opts) {
   const sidecar = new Sidecar(worker, [mode], { stdio: 'inherit' })

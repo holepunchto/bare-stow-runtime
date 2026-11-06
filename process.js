@@ -5,13 +5,15 @@ class ProcessRuntime extends Runtime {
   constructor(stream) {
     super(stream)
 
-    new Signal('SIGTERM')
-      .on('signal', () => this._onsigterm())
-      .start()
-      .unref()
+    for (const name of ['SIGTERM', 'SIGINT', 'SIGHUP']) {
+      new Signal(name)
+        .on('signal', () => this._onsignal())
+        .start()
+        .unref()
+    }
   }
 
-  _onsigterm() {
+  _onsignal() {
     if (this._exitCode !== null) Bare.exit(this._exitCode)
     else this._shutdown(0)
   }

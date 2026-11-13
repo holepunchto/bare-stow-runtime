@@ -56,6 +56,17 @@ test('runtime reports errors thrown by start', async (t) => {
   t.is(await exited, 1)
 })
 
+for (const mode of ['esm', 'transpiled', 'import']) {
+  test(`runtime runs the default export of an entry loaded as ${mode}`, async (t) => {
+    const { ipc, exited } = spawn(mode)
+
+    await ipc.ready
+
+    t.is(await ipc.terminate(), 0)
+    t.is(await exited, 0)
+  })
+}
+
 test('runtime exits once the configured grace runs out', async (t) => {
   // Leave the exit to the runtime rather than killing it from the host.
   const { ipc, exited } = spawn('stall', { grace: 100, kill: () => {} })

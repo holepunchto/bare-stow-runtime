@@ -21,6 +21,14 @@ const entries = {
   }
 }
 
+const loaders = {
+  esm: () => require('./esm.mjs'),
+  transpiled: () => require('./transpiled.js'),
+  import: () => import('./esm.mjs')
+}
+
+const mode = Bare.argv[2]
+
 const ipc = runtime.attach(Bare.IPC)
 
-ipc.run(() => Promise.resolve({ default: entries[Bare.argv[2]] }), ipc)
+ipc.run(loaders[mode] || (() => entries[mode]), ipc)

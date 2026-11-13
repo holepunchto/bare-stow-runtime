@@ -25,9 +25,9 @@ class Runtime extends Protocol {
 
   async run(load, arg) {
     try {
-      const entry = await load()
+      const start = defaultExport(await load())
 
-      this._stop = await entry.default(arg, () => this._ready())
+      this._stop = await start(arg, () => this._ready())
 
       this._ready()
     } catch (err) {
@@ -73,4 +73,12 @@ exports.Runtime = Runtime
 
 exports.attach = function attach(stream) {
   return new Runtime(stream)
+}
+
+function defaultExport(entry) {
+  if (entry.__esModule || entry[Symbol.toStringTag] === 'Module') {
+    return entry.default
+  }
+
+  return entry
 }

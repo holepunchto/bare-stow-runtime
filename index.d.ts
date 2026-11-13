@@ -14,10 +14,11 @@ interface Runtime extends Protocol {
    * callback. Ready is signaled when the entry calls `ready()` or once its returned promise
    * resolves, whichever comes first. The entry may return, or resolve to, a `stop()` function that
    * runs before the worker exits.
-   * @param load - A function importing the bundle entry module.
+   * @param load - A function loading the bundle entry module, with either `require()` or
+   * `import()`.
    * @param arg - The value passed to the entry.
    */
-  run(load: () => Promise<{ default: Function }>, arg: unknown): Promise<void>
+  run(load: () => unknown, arg: unknown): Promise<void>
 }
 
 declare class Runtime {

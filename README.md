@@ -13,7 +13,7 @@ const runtime = require('bare-stow-runtime')
 
 const ipc = runtime.attach(Bare.IPC)
 
-ipc.run(() => import('./core.js'), ipc)
+ipc.run(() => require('./core.js'), ipc)
 ```
 
 A bundle that owns its process, such as a sidecar, attaches through `bare-stow-runtime/process` instead, which also shuts down on `SIGTERM`, `SIGINT`, and `SIGHUP`. On Windows, where `SIGTERM` can't be caught, `SIGINT` is delivered on Ctrl+C and `SIGHUP` when the console window closes or the user logs off or shuts down. Windows ends the process a few seconds after `SIGHUP` regardless of `grace`. Signals are delivered to the whole process, so a bundle running in a thread, such as a worker or worklet, leaves them to the host, and doesn't load `bare-signals` at all:
